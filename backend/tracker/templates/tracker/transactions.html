@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <title>My Finance Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+         <div class="text-end mb-3"><a href="/logout/" class="btn btn-danger btn-sm">Logout</a></div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Add Transaction</h1>
+        <a href="/monthly/" class="btn btn-primary ">Monthly Summary</a><br>
+        </div>
+
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+        <label>Amount:</label><br>
+        <input type="number" name="amount" step="1" class="form-control mb-2" required><br>
+
+        <label>Type:</label><br>
+        <select name="transaction_type" class="form-control mb-2" required>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+        </select><br>
+
+        <label>Category:</label><br>
+        <select name="category" class="form-control mb-2">
+            <option value="food">Food</option>
+            <option value="travel">Travel</option>
+            <option value="rent">Rent</option>
+            <option value="shopping">Shopping</option>
+            <option value="other">Other</option>
+        </select><br>
+
+        <label>Note:</label><br>
+        <input type="text" name="note" class="form-control mb-2"><br>
+
+        <label>Date:</label><br>
+        <input type="date" name="date" class="form-control mb-2" required><br>
+
+        <button type="submit" class="btn btn-success">Add Transaction</button>
+    </form>
+    <h1>My Transactions</h1>
+    <h2 class="mb-3">Summary</h2>
+    <div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 bg-success text-white">
+            <h5>Total Income</h5>
+            <h4>₹ {{ total_incomes }}</h4>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 bg-danger text-white">
+            <h5>Total Expenses</h5>
+            <h4>₹ {{ total_expenses }}</h4>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 bg-primary text-white">
+            <h5>Balance</h5>
+            <h4>₹ {{ balance_amount }}</h4>
+        </div>
+    </div>
+    </div><br>
+
+    <h2 class="mt-4">Category-wise Summary</h2>
+    <table class="table table-bordered">
+        <tr>
+            <th>Category</th>
+            <th>Total Amount</th>
+        </tr>
+        {% for category, amount in category_totals.items %}
+        <tr>
+            <td>{{ category }}</td>
+            <td>{{ amount }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Note</th>
+            <th>Action</th>
+        </tr>
+        {% for t in transactions %}
+        <tr class = "{% if t.transaction_type == 'income' %}table-success{% else %}table-danger{% endif %}">
+            <td>{{ t.date }}</td>
+            <td>{{ t.transaction_type }}</td>
+            <td>{{ t.amount }}</td>
+            <td>{{ t.category }}</td>
+            <td>{{ t.note }}</td>
+            <td>
+                <a href="/edit/{{t.id}}/" class="btn btn-sm btn-warning">Edit</a>
+                <a href="/?delete={{ t.id }}" class="btn btn-sm btn-danger">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2 class="mt-4">Monthly Summary</h2>
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Month</th>
+        <th>Income</th>
+        <th>Expense</th>
+        <th>Balance</th>
+    </tr>
+
+    {% for month, data in monthly_summarys.items %}
+    <tr>
+        <td>{{ month }}</td>
+        <td>₹ {{ data.income }}</td>
+        <td>₹ {{ data.expense }}</td>
+        <td>₹ {{ data.balance }}</td>
+    </tr>
+    {% endfor %}
+    
+    </table>
+    </div>
+</body>
+</html>
