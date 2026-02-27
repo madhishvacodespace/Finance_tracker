@@ -25,7 +25,7 @@ def transaction_list(request):
         Transaction.objects.filter(id=delete_id, user=request.user).delete()
         return redirect('/')
 
-    transactions = Transaction.objects.filter(user=request.user)
+    transactions = Transaction.objects.filter(user=request.user).order_by('-date')
 
     total_income = sum(t.amount for t in transactions if t.transaction_type == 'income')
     total_expense = sum(t.amount for t in transactions if t.transaction_type == 'expense')
